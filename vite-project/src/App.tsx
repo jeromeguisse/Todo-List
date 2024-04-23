@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './App.css'
 
 function Form({ addTodo }) {
@@ -39,7 +39,15 @@ function TodoList({ todos, deleteTodo, modifyTodo }) {
 }
 
 function App() {
-  const [todos, setTodos] = useState([]);
+  // Initialize state with tasks from localStorage if available
+  const [todos, setTodos] = useState(() => {
+    const savedTodos = window.localStorage.getItem('todos');
+    if (savedTodos) {
+      return JSON.parse(savedTodos);
+    } else {
+      return [];
+    }
+  });
 
   const addTodo = (todo) => {
     setTodos([...todos, todo]);
@@ -57,6 +65,11 @@ function App() {
     newTodos[index] = newTodo;
     setTodos(newTodos);
   };
+
+  useEffect(() => {
+    // Save todos to localStorage whenever todos changes
+    window.localStorage.setItem('todos', JSON.stringify(todos));
+  }, [todos]);
 
   return (
     <div>
