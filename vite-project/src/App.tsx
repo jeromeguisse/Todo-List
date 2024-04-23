@@ -1,20 +1,70 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React, { useState, useRef } from 'react';
 import './App.css'
 
-// App.tsx
-import React from 'react';
-import TodoList from './TodoList'; // Adjust the import path based on your project structure
+function Form({ addTodo }) {
+  const inputRef = useRef();
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const todo = inputRef.current.value;
+    addTodo(todo);
+    inputRef.current.value = "";
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        name="todo"
+        placeholder="Write a new todo"
+        ref={inputRef}
+      />
+      <button type="submit">Add todo</button>
+    </form>
+  );
+}
+
+function TodoList({ todos, deleteTodo, modifyTodo }) {
+  return (
+    <ul>
+      {todos.map((todo, index) => (
+        <li key={index}>
+          {todo}
+          <button onClick={() => modifyTodo(index)}>Modify</button>
+          <button onClick={() => deleteTodo(index)}>Delete</button>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 function App() {
-    return (
-        <div>
-            <h1>My Todo App</h1>
-            <TodoList />
-        </div>
-    );
+  const [todos, setTodos] = useState([]);
+
+  const addTodo = (todo) => {
+    setTodos([...todos, todo]);
+  };
+
+  const deleteTodo = (index) => {
+    const newTodos = [...todos];
+    newTodos.splice(index, 1);
+    setTodos(newTodos);
+  };
+
+  const modifyTodo = (index) => {
+    const newTodo = prompt("Enter new todo");
+    const newTodos = [...todos];
+    newTodos[index] = newTodo;
+    setTodos(newTodos);
+  };
+
+  return (
+    <div>
+      <h1>My Todo App</h1>
+      <Form addTodo={addTodo} />
+      <TodoList todos={todos} deleteTodo={deleteTodo} modifyTodo={modifyTodo} />
+    </div>
+  );
 }
 
 export default App;
-
